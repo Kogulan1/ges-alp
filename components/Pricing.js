@@ -3,7 +3,7 @@ import Image from "next/image";
 import Testimoni from "./Testimoni";
 import ButtonPrimary from "./misc/ButtonPrimary";
 import ButtonOutline from "./misc/ButtonOutline.";
-import Maps from "../public/assets/HugeGlobal.svg";
+import Maps from "../public/assets/Doctors.svg";
 import { motion } from "framer-motion";
 import getScrollAnimation from "../utils/getScrollAnimation";
 import ScrollAnimationWrapper from "./Layout/ScrollAnimationWrapper";
@@ -187,9 +187,9 @@ const Pricing = () => {
               <Maps className="w-full h-auto" />
             </motion.div>
           </ScrollAnimationWrapper>
-          <ScrollAnimationWrapper>
+          {/* <ScrollAnimationWrapper>
             <motion.div className="w-full flex justify-evenly items-center mt-4 flex-wrap lg:flex-nowrap" variants={scrollAnimation}>
-              {/* <Netflix className="h-18 w-auto" /> */}
+              
               <img
                 src="/assets/Icon/amazon.png"
                 className="h-14 w-auto mt-4 lg:mt-2"
@@ -216,26 +216,43 @@ const Pricing = () => {
                 alt=""
               />
             </motion.div>
-          </ScrollAnimationWrapper>
+          </ScrollAnimationWrapper> */}
         </div>
         <div className="flex flex-col w-full my-16" id="testimoni">
           <ScrollAnimationWrapper>
             <motion.h3
               variants={scrollAnimation}
-              className="text-2xl sm:text-3xl lg:text-4xl font-medium text-black-600 leading-normal w-9/12 sm: lg:w-4/12 mx-auto">
-              Trusted by Thousands of Happy Customer{" "}
+              className="text-2xl sm:text-3xl lg:text-4xl font-medium text-black-600 leading-normal w-9/12 sm: lg:w-6/12 mx-auto">
+              Who We Aim to Work With{" "}
             </motion.h3>
             <motion.p
               variants={scrollAnimation}
-              className="leading-normal mx-auto mb-2 mt-4 w-10/12 sm:w-7/12 lg:w-6/12"
+              className="leading-normal mx-auto mb-2 mt-4 w-10/12 sm:w-7/12 lg:w-8/12"
             >
-              These are the stories of our customers who have joined us with great
-              pleasure when using this crazy feature.
+              We are actively working towards collaborations with healthcare providers and medical institutions to enhance patient experience through AI-powered scheduling and automated workflows.
             </motion.p>
           </ScrollAnimationWrapper>
           <ScrollAnimationWrapper className="w-full flex flex-col py-12">
             <motion.div variants={scrollAnimation}>
-              <Testimoni />
+            <motion.p
+              variants={scrollAnimation}
+              className="leading-normal mx-auto mb-2 mt-4 w-10/12 sm:w-7/12 lg:w-7/12"
+            >
+              <ul className="flex flex-col list-inside pl-6 xxl:pl-0 items-start justify-start text-left text-black-500 flex-grow">
+                  <li className="relative check custom-list my-2">
+                  Clinics & Hospitals | To reduce administrative workload and improve patient flow
+                  </li>
+                  <li className="relative check custom-list my-2">
+                  Medical Professionals | Helping doctors manage appointments effortlessly
+                  </li>
+                  <li className="relative check custom-list my-2">
+                  Telemedicine Startups | Enabling seamless virtual consultations
+                  </li>
+                  <li className="relative check custom-list my-2">
+                  Healthcare Innovators  | Who are looking for AI-driven efficiency in healthcare 
+                  </li>
+                </ul> 
+            </motion.p>
             </motion.div>
           </ScrollAnimationWrapper>
           <ScrollAnimationWrapper className="relative w-full mt-16">

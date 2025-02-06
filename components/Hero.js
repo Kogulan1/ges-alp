@@ -19,7 +19,7 @@ const Hero = ({
     },
     {
       name: "Scheduling & Care Network",
-      number: "AI-Optimized",
+      number: "AI-Optimized ",
       icon: "/assets/Icon/bx_bxs-server.svg",
     },
   ],
