@@ -8,18 +8,18 @@ import ScrollAnimationWrapper from "./Layout/ScrollAnimationWrapper";
 const Hero = ({
   listUser = [
     {
-      name: "Users",
-      number: "390",
+      name: "Future Patients",
+      number: "100K",
       icon: "/assets/Icon/heroicons_sm-user.svg",
     },
     {
-      name: "Locations",
-      number: "20",
+      name: "Clinic & Hospital Partners",
+      number: "Expanding to 1K",
       icon: "/assets/Icon/gridicons_location.svg",
     },
     {
-      name: "Server",
-      number: "50",
+      name: "Scheduling & Care Network",
+      number: "AI-Optimized",
       icon: "/assets/Icon/bx_bxs-server.svg",
     },
   ],
