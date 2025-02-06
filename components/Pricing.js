@@ -71,7 +71,7 @@ const Pricing = () => {
                 </ul>
                 <div className="flex flex-col w-full justify-center mb-8 flex-none mt-12">
                   <p className="text-2xl text-black-600 text-center mb-4 ">
-                    CHF 399
+                    CHF 399 <span className="text-black-500">/ mo</span>
                   </p>
                   <ButtonOutline>Select</ButtonOutline>
                 </div>
