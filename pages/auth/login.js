@@ -22,7 +22,7 @@ const SignIn = () => {
           <div className="flex flex-col justify-center items-start">
             {/* Clickable Logo - Redirects to Home */}
             <Image
-              src="/assets/logo.png" // Replace with actual logo path
+              src="/assets/Logo.svg" // Replace with actual logo path
               alt="GES ALP Logo"
               width={150}
               height={50}

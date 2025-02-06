@@ -14,8 +14,8 @@ export default NextAuth({
       return session;
     },
   },
-  pages: {
-    signIn: "/auth/login", // Redirect to custom login page
-  },
   secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: "/auth/login",
+  },
 });
