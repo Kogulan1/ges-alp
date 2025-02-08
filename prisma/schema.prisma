@@ -8,31 +8,32 @@ generator client {
 }
 
 model Clinic {
-  id       String   @id @default(uuid())
-  name     String
-  address  String   
-  phone    String
+  id       String   @id @default(uuid()) // Auto-generate ID
+  name     String   @unique
   location String
   doctors  Doctor[]
+  users    User[]
 }
 
 model Doctor {
   id           String        @id @default(uuid())
-  name         String
+  firstName    String
+  lastName     String
   specialty    String
   clinic       Clinic        @relation(fields: [clinicId], references: [id])
   clinicId     String
-  availability String? 
   appointments Appointment[]
 }
 
 model Patient {
   id           String         @id @default(uuid())
-  name         String
+  firstName    String
+  lastName     String
   phone        String         @unique
   email        String         @unique
+  dob          DateTime
   appointments Appointment[]
-  Notification Notification[]
+  notifications Notification[] // 🔴 This is the missing field! ✅
 }
 
 model Appointment {
@@ -41,17 +42,28 @@ model Appointment {
   patientId   String
   doctor      Doctor   @relation(fields: [doctorId], references: [id])
   doctorId    String
-  status      String 
+  status      String // Pending, Confirmed, Completed, Cancelled
   scheduledAt DateTime
-  reason      String?
 }
+
+model User {
+  id        String   @id @default(uuid()) // Auto-generate ID
+  firstName String?  // Make optional temporarily
+  lastName  String?  // Make optional temporarily
+  email     String   @unique
+  password  String?  // Some users login via Google
+  clinic    Clinic?  @relation(fields: [clinicId], references: [id])
+  clinicId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 
 model Notification {
   id        String   @id @default(uuid())
   patient   Patient  @relation(fields: [patientId], references: [id])
   patientId String
-  type      String // WhatsApp, Voice Call
+  type      String   // WhatsApp, Voice Call
   message   String
   sentAt    DateTime @default(now())
-  status    String
 }

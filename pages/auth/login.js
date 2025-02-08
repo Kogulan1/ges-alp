@@ -1,90 +1,83 @@
-import React, { useMemo } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import ButtonPrimary from "../../components/misc/ButtonPrimary";
-import { motion } from "framer-motion";
-import getScrollAnimation from "../../utils/getScrollAnimation";
-import ScrollAnimationWrapper from "../../components/Layout/ScrollAnimationWrapper";
-import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 
-const SignIn = () => {
-  const scrollAnimation = useMemo(() => getScrollAnimation(), []);
+const Login = () => {
   const router = useRouter();
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    const result = await signIn("credentials", {
+      email: form.email,
+      password: form.password,
+      redirect: false,
+    });
+
+    if (result.error) setError(result.error);
+    else router.push("/dashboard");
+  };
 
   return (
-    <div className="max-w-screen-xl mt-24 px-8 xl:px-16 mx-auto">
-      <ScrollAnimationWrapper>
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 py-16"
-          variants={scrollAnimation}
-        >
-          <div className="flex flex-col justify-center items-start">
-            {/* Clickable Logo - Redirects to Home */}
-            <Image
-              src="/assets/Logo.svg" // Replace with actual logo path
-              alt="GES ALP Logo"
-              width={150}
-              height={50}
-              className="cursor-pointer mb-6"
-              onClick={() => router.push("/")}
-            />
+    <div className="max-w-md mx-auto mt-12 p-6 shadow-md bg-white rounded-lg">
+      {/* Logo */}
+      <Image
+        src="/assets/Logo.svg"
+        alt="GES ALP Logo"
+        width={120}
+        height={40}
+        className="cursor-pointer"
+        onClick={() => router.push("/")}
+      />
 
-            <h1 className="text-3xl lg:text-4xl font-medium text-black-600 leading-normal">
-              Sign In to Your Account
-            </h1>
-            <p className="text-black-500 mt-4 mb-6">
-              Access your appointments, manage your schedule, and connect with healthcare providers easily.
-            </p>
+      <h1 className="text-2xl font-semibold text-center my-4">Sign In</h1>
 
-            {/* Google Sign-In Button */}
-            <button
-              onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-              className="w-full flex justify-center items-center p-3 border border-gray-300 rounded-md mb-4 bg-white shadow-md hover:shadow-lg transition"
-            >
-              <Image src="/assets/google-icon.png" width={20} height={20} alt="Google" />
-              <span className="ml-2 text-gray-700">Sign in with Google</span>
-            </button>
+      {/* Google Sign-In Button */}
+      <button
+        onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+        className="w-full p-3 bg-white border flex items-center justify-center shadow-sm mb-4 hover:shadow-md"
+      >
+        <Image src="/assets/google-icon.png" width={20} height={20} alt="Google" />
+        <span className="ml-2">Sign in with Google</span>
+      </button>
 
-            {/* Standard Sign-In Form */}
-            <form className="w-full">
-              <input
-                type="email"
-                placeholder="Email Address"
-                className="w-full p-3 border border-gray-300 rounded-md mb-4"
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                className="w-full p-3 border border-gray-300 rounded-md mb-4"
-              />
-              <ButtonPrimary>Sign In</ButtonPrimary>
-            </form>
+      {/* Error Message */}
+      {error && <p className="text-red-500 text-center mb-2">{error}</p>}
 
-            <p className="mt-4 text-black-500">
-              Don't have an account?{" "}
-              <Link href="/auth/signup">
-                <a className="text-orange-500 font-semibold">Sign Up</a>
-              </Link>
-            </p>
-          </div>
+      {/* Email & Password Login Form */}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email Address"
+          onChange={handleChange}
+          className="w-full p-3 border rounded mb-3"
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          onChange={handleChange}
+          className="w-full p-3 border rounded mb-3"
+          required
+        />
+        <button type="submit" className="w-full p-3 bg-blue-600 text-white rounded hover:bg-blue-700">
+          Sign In
+        </button>
+      </form>
 
-          <div className="flex w-full">
-            <motion.div className="h-full w-full" variants={scrollAnimation}>
-              <Image
-                src="/assets/Illustration2.png"
-                alt="Sign In Illustration"
-                quality={100}
-                width={600}
-                height={400}
-                layout="responsive"
-              />
-            </motion.div>
-          </div>
-        </motion.div>
-      </ScrollAnimationWrapper>
+      <p className="mt-3 text-center">
+        Don't have an account? <a href="/auth/signup" className="text-blue-500">Sign Up</a>
+      </p>
     </div>
   );
 };
 
-export default SignIn;
+export default Login;
