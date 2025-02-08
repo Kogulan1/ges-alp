@@ -1,0 +1,57 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Load from .env.local
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Clinic {
+  id       String   @id @default(uuid())
+  name     String
+  address  String   
+  phone    String
+  location String
+  doctors  Doctor[]
+}
+
+model Doctor {
+  id           String        @id @default(uuid())
+  name         String
+  specialty    String
+  clinic       Clinic        @relation(fields: [clinicId], references: [id])
+  clinicId     String
+  availability String? 
+  appointments Appointment[]
+}
+
+model Patient {
+  id           String         @id @default(uuid())
+  name         String
+  phone        String         @unique
+  email        String         @unique
+  appointments Appointment[]
+  Notification Notification[]
+}
+
+model Appointment {
+  id          String   @id @default(uuid())
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  patientId   String
+  doctor      Doctor   @relation(fields: [doctorId], references: [id])
+  doctorId    String
+  status      String 
+  scheduledAt DateTime
+  reason      String?
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  patient   Patient  @relation(fields: [patientId], references: [id])
+  patientId String
+  type      String // WhatsApp, Voice Call
+  message   String
+  sentAt    DateTime @default(now())
+  status    String
+}
