@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL") // Load from .env.local
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -8,62 +8,121 @@ generator client {
 }
 
 model Clinic {
-  id       String   @id @default(uuid()) // Auto-generate ID
-  name     String   @unique
-  location String
-  doctors  Doctor[]
-  users    User[]
-}
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  address      String?
+  phone_number String?       @unique
+  email        String?       @unique
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+  doctors      Doctor[]      @relation(name: "doctorsInClinic")
+  patients     Patient[]     @relation(name: "patientsInClinic")
+  appointments Appointment[] @relation(name: "appointmentsAtClinic")
+  services     Service[]     @relation(name: "servicesAtClinic")
+  users        User[]        @relation(name: "clinicUsers")
 
-model Doctor {
-  id           String        @id @default(uuid())
-  firstName    String
-  lastName     String
-  specialty    String
-  clinic       Clinic        @relation(fields: [clinicId], references: [id])
-  clinicId     String
-  appointments Appointment[]
-}
-
-model Patient {
-  id           String         @id @default(uuid())
-  firstName    String
-  lastName     String
-  phone        String         @unique
-  email        String         @unique
-  dob          DateTime
-  appointments Appointment[]
-  notifications Notification[] // 🔴 This is the missing field! ✅
-}
-
-model Appointment {
-  id          String   @id @default(uuid())
-  patient     Patient  @relation(fields: [patientId], references: [id])
-  patientId   String
-  doctor      Doctor   @relation(fields: [doctorId], references: [id])
-  doctorId    String
-  status      String // Pending, Confirmed, Completed, Cancelled
-  scheduledAt DateTime
+  @@map("clinics")
 }
 
 model User {
-  id        String   @id @default(uuid()) // Auto-generate ID
-  firstName String?  // Make optional temporarily
-  lastName  String?  // Make optional temporarily
-  email     String   @unique
-  password  String?  // Some users login via Google
-  clinic    Clinic?  @relation(fields: [clinicId], references: [id])
-  clinicId  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int            @id @default(autoincrement())
+  username      String?        @unique
+  password      String
+  role          String        @default("PATIENT")
+  email         String        @unique
+  phone_number  String?       @unique
+  clinic_id     Int?
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+  clinic        Clinic?       @relation(name: "clinicUsers", fields: [clinic_id], references: [id], onDelete: SetNull)
+  appointments  Appointment[] @relation(name: "userAppointments")
+  notifications Notification[] @relation(name: "notificationsForUser")
+  userServices  UserServices[] @relation(name: "userServicesForUser")
+  patient       Patient?      @relation(name: "userPatient")
+  doctor        Doctor?       @relation(name: "userDoctor")
+
+  @@map("users")
 }
 
+model Patient {
+  id              Int           @id @default(autoincrement())
+  user_id         Int?          @unique
+  medical_history String?
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+  user            User?         @relation(name: "userPatient", fields: [user_id], references: [id], onDelete: SetNull)
+  appointments    Appointment[] @relation(name: "appointmentsForPatient")
+  clinic          Clinic?       @relation(name: "patientsInClinic", fields: [clinic_id], references: [id], onDelete: SetNull)
+  clinic_id       Int?
+
+  @@map("patients")
+}
+
+model Doctor {
+  id             Int           @id @default(autoincrement())
+  user_id        Int?          @unique
+  specialization String?
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+  user           User?         @relation(name: "userDoctor", fields: [user_id], references: [id], onDelete: SetNull)
+  appointments   Appointment[] @relation(name: "appointmentsForDoctor")
+  clinic         Clinic?       @relation(name: "doctorsInClinic", fields: [clinic_id], references: [id], onDelete: SetNull)
+  clinic_id      Int?
+
+  @@map("doctors")
+}
+
+model Appointment {
+  id               Int      @id @default(autoincrement())
+  patient_id       Int
+  doctor_id        Int
+  clinic_id        Int?
+  appointment_time DateTime
+  status           String   @default("PENDING")
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  patient          Patient  @relation(name: "appointmentsForPatient", fields: [patient_id], references: [id], onDelete: Cascade)
+  doctor           Doctor   @relation(name: "appointmentsForDoctor", fields: [doctor_id], references: [id], onDelete: Cascade)
+  clinic           Clinic?  @relation(name: "appointmentsAtClinic", fields: [clinic_id], references: [id], onDelete: SetNull)
+  user_id          Int?
+  user             User?    @relation(name: "userAppointments", fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@map("appointments")
+}
 
 model Notification {
-  id        String   @id @default(uuid())
-  patient   Patient  @relation(fields: [patientId], references: [id])
-  patientId String
-  type      String   // WhatsApp, Voice Call
-  message   String
-  sentAt    DateTime @default(now())
+  id      Int      @id @default(autoincrement())
+  user_id Int
+  type    String
+  message String
+  sent_at DateTime @default(now())
+  status  String   @default("UNREAD")
+  user    User     @relation(name: "notificationsForUser", fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model Service {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique
+  description  String
+  clinic_id    Int?
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  clinic       Clinic?        @relation(name: "servicesAtClinic", fields: [clinic_id], references: [id], onDelete: SetNull)
+  userServices UserServices[] @relation(name: "servicesForUserServices")
+
+  @@map("services")
+}
+
+model UserServices {
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  service_id  Int
+  assigned_at DateTime @default(now())
+  user        User     @relation(name: "userServicesForUser", fields: [user_id], references: [id], onDelete: Cascade)
+  service     Service  @relation(name: "servicesForUserServices", fields: [service_id], references: [id], onDelete: Cascade)
+
+  @@map("user_services")
+  @@unique([user_id, service_id])
 }
